@@ -1,0 +1,99 @@
+TALLER 9
+
+Modifica el programa para que imprima lo siguiente: A, \, $, &amp; y 1. Documenta tu procedimiento.
+
+section .data
+num1 db 5           ; Define un byte con el valor 5
+num2 db 12          ; Define un byte con el valor 11
+result db 0         ; Variable para almacenar el resultado
+msg db 'Resultado: ', 0  ; Mensaje a imprimir (terminado en 0)
+
+section .bss
+buffer resb 4       ; Reserva 4 bytes para el buffer (salida ASCII)
+
+section .text
+global _start
+_start:
+    mov al, [num1]      ; Carga el valor de num1 (5) en AL
+    add al, [num2]      ; Suma el valor de num2 (11) a AL → AL = 16
+    mov [result], al    ; Guarda el resultado (16) en 'result'
+
+    ; Convertir el resultado a ASCII
+    movzx eax, byte [result] ; Extiende el valor de 8 bits (AL) a 32 bits (EAX)
+    add eax, 48              ; Convierte el número en carácter ASCII (‘0’=48)
+    mov [buffer], al         ; Guarda el carácter en buffer
+
+    ; Mostrar el mensaje "Resultado: "
+    mov eax, 4               ; syscall write
+    mov ebx, 1               ; descriptor de archivo 1 (stdout)
+    mov ecx, msg             ; dirección del mensaje
+    mov edx, 11              ; longitud del mensaje
+    int 0x80                 ; interrupción para llamar al sistema
+
+    ; Mostrar el carácter del resultado
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, buffer
+    mov edx, 1
+    int 0x80
+
+    ; Salir del programa
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
+
+Utilizando de nuevo el código de prueba original, modifica el código para que ahora utilice el modo de direccionamiento inmediato e indirecto (en programas separados) para que imprima el carácter ‘@’. Documenta tus resultados.
+
+Inmediato:
+section .data
+num1 db 5           ; Define un byte con el valor 5
+num2 db 0           ; Define un byte con el valor 11
+result db 0         ; Variable para almacenar el resultado
+msg db 'Resultado: ', 0  ; Mensaje a imprimir (terminado en 0)
+
+section .bss
+buffer resb 4       ; Reserva 4 bytes para el buffer (salida ASCII)
+
+section .text
+global _start
+_start:
+    mov al, 64
+    mov [buffer], al
+
+    ; Mostrar el mensaje "Resultado: "
+    mov eax, 4               ; syscall write
+    mov ebx, 1               ; descriptor de archivo 1 (stdout)
+    mov ecx, buffer             ; dirección del mensaje
+    mov edx, 11              ; longitud del mensaje
+    int 0x80                 ; interrupción para llamar al sistema
+
+    ; Salir del programa
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
+
+Indirecto:
+section .data
+caracter db '@'          ; Guarda el carácter en memoria     
+
+section .bss
+buffer resb 1       ; Reserva 1 byte para el buffer (salida ASCII)
+
+section .text
+global _start
+_start:
+    lea esi, [caracter]  ; Carga en ESI la dirección de 'caracter'
+    mov al, [esi]        ; Usa direccionamiento indirecto
+    mov [buffer], al
+
+    ; Mostrar el mensaje "Resultado: "
+    mov eax, 4               ; syscall write
+    mov ebx, 1               ; descriptor de archivo 1 (stdout)
+    mov ecx, buffer         
+    mov edx, 11              ; longitud del mensaje
+    int 0x80                 ; interrupción para llamar al sistema
+
+    ; Salir del programa
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
