@@ -1,0 +1,187 @@
+TALLER 8
+
+Ejercicio 1:
+call leer_numero
+mov BX, AX
+call leer_numero
+mov CX, AX
+
+cmp BX, CX
+je son_iguales
+jg bx_mayor
+jl cx_mayor
+
+son_iguales:
+test BX, BX
+js ambos_o_primero_neg
+test CX, CX
+js segundo_neg
+jmp fin
+
+bx_mayor:
+test BX, BX
+js primero_neg
+jmp fin
+
+cx_mayor:
+test CX, CX
+js segundo_neg
+jmp fin
+
+primero_neg:
+jmp fin
+
+segundo_neg:
+jmp fin
+
+ambos_o_primero_neg:
+test CX, CX
+js ambos_neg
+jmp primero_neg
+
+ambos_neg:
+jmp fin
+
+Fin:
+
+Ejercicio 2:
+call leer_numero
+
+cmp AX, 0
+je es_cero
+js es_negativo
+jmp es_positivo
+
+es_cero:
+jmp fin2
+
+es_negativo:
+jmp fin2
+
+es_positivo:
+jmp fin2
+
+Fin2:
+
+Ejercicio 3:
+
+call leer_numero
+
+test AX, 1
+jp es_par
+jnp es_impar
+
+es_par:
+jmp fin3
+
+es_impar:
+jmp fin3
+
+Fin3:
+
+Ejercicio 4:
+
+call leer_numero
+mov BX, AX
+call leer_numero
+
+add AX, BX
+jo hay_overflow
+jno sin_overflow
+
+hay_overflow:
+jmp fin4
+
+sin_overflow:
+jmp fin4
+
+fin4:
+
+Ejercicio 5:
+
+call leer_numero
+mov BX, AX
+call leer_numero
+
+add AX, BX
+jc hubo_carry
+jnc sin_carry
+
+hubo_carry:
+jmp fin5
+
+sin_carry:
+jmp fin5
+
+Fin5:
+
+Ejercicio 6:
+
+call leer_numero
+mov BX, AX
+call leer_numero
+mov CX, AX
+call leer_numero
+mov DX, AX
+
+mov SI, BX
+mov DI, BX
+
+cmp CX, SI
+jg num2_max
+jmp chk_min2
+
+num2_max:
+mov SI, CX
+
+chk_min2:
+cmp CX, DI
+jl num2_min
+jmp chk3
+
+num2_min:
+mov DI, CX
+
+chk3:
+cmp DX, SI
+jg num3_max
+jmp chk_min3
+
+num3_max:
+mov SI, DX
+
+chk_min3:
+cmp DX, DI
+jl num3_min
+jmp fin6
+
+num3_min:
+mov DI, DX
+
+Fin6:
+
+Ejercicio 7:
+
+call leer_numero
+mov BX, AX
+call leer_numero
+mov CX, AX
+
+cmp BX, CX
+jle fin7
+
+mov AX, BX
+mov BX, CX
+mov CX, AX
+
+Fin7:
+
+Ejercicio 8:
+
+mov AX, 0
+
+ciclo:
+; imprimir AX
+inc AX
+cmp AX, 10
+jne ciclo
