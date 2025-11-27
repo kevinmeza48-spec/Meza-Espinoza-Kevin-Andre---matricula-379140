@@ -1,0 +1,143 @@
+INTERRUPCIONES
+
+ENSAMBLADOR
+
+    .DATA
+ERROR_FLAG: .BYTE 0   ; Flag para indicar si ocurrió un error (0 = No, 1 = Sí)
+EXIT_CODE:  .DWORD 0  ; Código de salida/retorno de la función
+
+; ***************************************
+; Bloque TRY
+; ***************************************
+
+INICIO_TRY:
+    MOV R1, 10 ; Cargar un valor en R1
+    MOV R2, 0  ; Cargar un valor en R2 (Simula una posible división por cero)
+    
+    CMP R2, 0                       ; Comparar R2 con 0
+    JE  MANEJAR_ERROR    ; Si es igual a cero, saltar al manejador
+
+    DIV R1, R2                      ; Operación riesgosa (e.g., división)
+
+    JMP FIN_TRY_CATCH       ; Salto incondicional al final
+
+
+; ***************************************
+; Bloque CATCH
+; ***************************************
+
+MANEJAR_ERROR:
+    ; Simula la lógica de 'catch'
+    MOV ERROR_FLAG, 1       ; Establecer el flag de error
+    MOV R3, 99                      ; Cargar código de error en R3
+
+    PRINT_STRING "¡Error capturado en la operación!"
+    PRINT_REGISTER R3       ; Mostrar el código de error
+    
+
+; ***************************************
+; Finalización
+; ***************************************
+
+FIN_TRY_CATCH:
+    CMP ERROR_FLAG, 1       ; Verificar si hubo un error
+    JNE TRY_EXIT_SUCCESS    ; Si no hubo error, saltar al éxito
+
+    ; Si hubo error (Error Flag = 1):
+    MOV EXIT_CODE, 1        ; Establecer código de salida de fallo
+    PRINT_STRING "El programa finalizó con un error."
+    JMP PROGRAM_EXIT
+
+TRY_EXIT_SUCCESS:
+    ; Si no hubo error (Error Flag = 0):
+    MOV EXIT_CODE, 0        ; Establecer código de salida de éxito
+    PRINT_STRING "Operación exitosa."
+
+PROGRAM_EXIT:
+    HALT
+
+LENGUAJE C
+
+#include <stdio.h>
+#include <setjmp.h>
+
+jmp_buf buffer;
+
+void validarNumero(int n);
+
+int main() 
+{
+    int numero;
+
+        if (setjmp(buffer) == 0) 
+        {
+        printf("Ingrese un numero positivo: ");
+        scanf("%d", &numero);
+
+        validarNumero(numero);
+
+        printf("Numero valido….\n");
+        } 
+        else 
+        {
+        		printf("Se capturo una excepcion: numero invalido.\n");
+        }
+
+    printf("Programa terminado.\n");
+    return 0;
+}
+
+void validarNumero(int n) 
+{
+    if (n <= 0) 
+    {
+        printf("Error: el numero debe ser positivo.\n");
+        longjmp(buffer, 1);     
+     }
+}
+
+#include <stdio.h>
+
+
+int puedeComprar(int saldo, int precio);
+
+
+int main()
+{
+    int saldo_usuario = 120;
+    int precio_producto = 150;
+
+
+    // <-- Breakpoint 1: revisar valores antes de llamar la función
+    int resultado = puedeComprar(saldo_usuario, precio_producto);
+
+
+    // <-- Breakpoint 2: revisar el resultado devuelto antes de imprimir
+    if (resultado == 1)
+    {
+        printf("Compra realizada con exito.\n");
+    }
+    else
+    {
+        printf("Saldo insuficiente para realizar la compra.\n");
+    }
+
+
+    return 0;
+}
+
+
+int puedeComprar(int saldo, int precio)
+{
+    // <-- Breakpoint 3: ya dentro de la función, revisar saldo/precio
+    if (saldo >= precio)
+    {
+        // <-- Breakpoint 4: condición verdadera
+        return 1; // Compra permitida
+    }
+    else
+    {
+        // <-- Breakpoint 5: condición falsa
+        return 0; // Compra rechazada
+    }
+}
