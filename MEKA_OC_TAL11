@@ -1,0 +1,91 @@
+TALLER 11
+
+section .data
+    msg db "Resultado: ", 0
+    len equ $ - msg
+
+    newline db 10, 0
+    lenNL equ $ - newline
+
+    msgErr db "Error: division entre cero", 0
+    lenErr equ $ - msgErr
+
+section .bss
+    resultado resb 1
+
+section .text
+    global _start
+
+%macro PRINT 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+%endmacro
+
+_start:
+    ; ============================
+    ; Números hardcoded
+    ; ============================
+    mov al, '8'       ; primer número (ASCII)
+    sub al, '0'       ; convertir a entero (8)
+
+    mov bl, '2'       ; segundo número (ASCII)
+    sub bl, '0'       ; convertir a entero (2)
+
+    ; ============================
+    ; División AL / BL
+    ; ============================
+    cmp bl, 0         ; verificar si el divisor es 0
+    je division_cero  ; si es cero, saltar
+
+    xor ah, ah        ; limpiar AH para div
+    div bl            ; resultado en AL
+
+    ; ============================
+    ; Convertir resultado a ASCII
+    ; ============================
+    add al, '0'
+    mov [resultado], al
+
+    ; ============================
+    ; Imprimir "Resultado: "
+    ; ============================
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, msg
+    mov edx, len
+    int 0x80
+
+    ; ============================
+    ; Imprimir el resultado
+    ; ============================
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, resultado
+    mov edx, 1
+    int 0x80
+
+    ; ============================
+    ; Imprimir salto de línea
+    ; ============================
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, lenNL
+    int 0x80
+
+    jmp salir
+
+division_cero:
+    PRINT msgErr, lenErr
+    PRINT newline, lenNL
+
+    ; ============================
+    ; Salir
+    ; ============================
+salir:
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
