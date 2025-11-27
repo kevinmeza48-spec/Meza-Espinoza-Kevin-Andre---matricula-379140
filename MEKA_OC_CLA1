@@ -1,0 +1,44 @@
+MACROS
+
+%macro print_int 1
+mov eax, 4
+mov ebx, 1
+mov ecx, %1
+mov edx, 4
+int 0x80
+%endmacro
+section .data
+array dd 1, 2, 3, 4, 5
+section .text
+global _start
+Este código crea una macro que sirve para imprimir un número. Es como una función rápida que solo copias y pegas cuando la llamas. Lo único que hace es usar la interrupción del sistema para mostrar en pantalla el valor que le pases.
+
+_start:
+mov ecx, 0
+mov eax, 0
+bucle:
+mov ebx, [array + ecx*4]
+add eax, ebx
+inc ecx
+cmp ecx, 5
+jl bucle
+print_int eax
+mov eax, 1
+xor ebx, ebx
+int 0x80
+Este solo define un arreglo con cinco números. Es la parte donde están guardados los datos que el ciclo va a ir leyendo después. No hace nada por sí mismo, solo deja listos los valores en memoria.
+
+_start:
+mov ecx, 0
+mov eax, 0
+bucle:
+mov ebx, [array + ecx*4]
+add eax, ebx
+inc ecx
+cmp ecx, 5
+jl bucle
+print_int eax
+mov eax, 1
+xor ebx, ebx
+int 0x80
+Este es el que hace el trabajo: empieza con el índice en cero, va tomando cada número del arreglo usando array + ecx*4, lo suma a eax, avanza al siguiente y repite mientras no llegue a cinco. Al final, imprime la suma y sale del programa. Es como un for hecho a mano.
